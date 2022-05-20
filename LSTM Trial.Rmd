@@ -1,0 +1,30 @@
+---
+title: "LSTM Trial"
+output: html_notebook
+---
+
+```{r}
+set.seed(520)
+
+model <- keras_model_sequential() %>% 
+  layer_lstm(units = 100, return_sequences = T, recurrent_activation = "ReLU",
+             input_shape = list(dim(X.train)[2], dim(X.train)[3])) %>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  loss = "mean_squared_error",
+  optimizer = "adam",
+  metrics = "mae"
+)
+
+history <- model %>% fit(
+  x = X.train,
+  y = xrp.train.y,
+  epochs = 50,
+  shuffle = F,
+  validation_data = list(X.val, xrp.val.y),
+  callbacks = list(callback_early_stopping(monitor = "val_mae", 
+                                               patience = 10))
+)
+```
+
